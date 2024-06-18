@@ -54,7 +54,9 @@ def read_txt(filename):
     fields=['Фамилия', 'Имя', 'Телефон', 'Описание']
     with open(filename,'r',encoding='utf-8') as phb:
         for line in phb:
-            record = dict(zip(fields, line.split(',')))
+            lines=line.split(',')
+            lines[-1]=lines[-1][:-1]
+            record = dict(zip(fields, lines))
             phone_book.append(record)	
     return phone_book
 
@@ -65,10 +67,12 @@ def write_txt(filename , phone_book):
             s=''
             for v in phone_book[i].values():
                 s = s + v + ','
-            phout.write(f'{s[:-1]}\n')
+            phout.write(f'{s[:-1]}/n')
 
 
-
+def print_result(book):
+    for e in book:
+        print(e)
 
 
 
