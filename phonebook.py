@@ -1,3 +1,6 @@
+import os.path as osp
+import os
+
 def work_with_phonebook():
     choice=show_menu()
     fileName='phon.txt'
@@ -5,34 +8,45 @@ def work_with_phonebook():
     while choice!="9":
         match(choice):
             case("1"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 print_result(phone_book)
             case("2"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 last_name=input('Введите фамилию: ')
                 print_result(find_by_lastname(phone_book,last_name))
             case("3"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 number=input('Введите номер: ')
                 print_result(find_by_number(phone_book,number))
             case("4"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 user_data=list()
                 user_data.append(input('Введите фамилию: '))
                 user_data.append(input('Введите имя: '))
                 user_data.append(input('Введите номер: '))
                 user_data.append(input('Введите описание: '))
                 add_user(phone_book,user_data)
-                write_txt(fileName,phone_book)
+                print(write_txt(fileName,phone_book))
             case("5"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 last_name=input('Введите фамилию: ')
                 print(change_number(phone_book,last_name))
+                print(write_txt(fileName,phone_book))
             case("6"):
+                os.system('cls' if os.name == 'nt' else 'clear')
                 lastname=input('Введите фамилию: ')
                 print(delete_by_lastname(phone_book,lastname))
+                print(write_txt(fileName,phone_book))
             case("7"):
-                rowNum=input("Введите номер строки: ")
-                newFile=input("Введите имя файла для копирования")
-                copyRow(newFile, rowNum)
+                os.system('cls' if os.name == 'nt' else 'clear')
+                rowNum=int(input("Введите номер строки: "))
+                newFile=input("Введите имя файла для копирования: ")
+                print(copyRow(fileName, newFile, rowNum))
             case("8"):
-                write_txt(fileName,phone_book)
+                os.system('cls' if os.name == 'nt' else 'clear')
+                print(write_txt(fileName,phone_book))
             case _:
+                os.system('cls' if os.name == 'nt' else 'clear')
                 print("Нет такого пункта, выберите верный пункт меню!")
         choice=show_menu()
         
@@ -71,6 +85,7 @@ def write_txt(filename , phone_book):
             for v in phone_book[i].values():
                 s = s + v + ','
             phout.write(f'{s[:-1]}\n')
+    return(f"Справочник сохранен в {filename}")
 
 
 def print_result(book):
@@ -114,6 +129,7 @@ def add_user(book,data):
 def change_number(book,name):
     for e in book:
         if name.lower() in e["Фамилия"].lower():
+            print_result([e])
             while True:
                 print("\nВыберите какие данные хотите изменить :\n",
                     "1. Фамилия\n",
@@ -132,12 +148,44 @@ def change_number(book,name):
                     case("4"):
                         e["Описание"]=input("Введите новое описание контакта: ")
                     case("5"):
-                        return
+                        return "Изменения сохранены"
                     case _:
                         print("Нет таких данных, выберите верный пункт меню!")
         else:
-            print("Ничего не найдено!")
-            return
+            return "Ничего не найдено!"
+
+
+def delete_by_lastname(book,name):
+    for e in book:
+        if name.lower() in e["Фамилия"].lower():
+            print_result([e])
+            print("\nВы точно хотите удалить этот контакт?\n",
+                "1. Да.\n",
+                "2. Нет.")
+            choice=input()
+            match(choice):
+                case("1"):
+                    del book[book.index(e)]
+                    return "Контакт удален!"
+                case("2"):
+                    return "Удаление отменено, контакт не был удален!"
+                
+
+def copyRow(fileName, newFile, rowNum):
+    with open(fileName,'r',encoding='utf-8') as fn:
+        i=1
+        for ln in fn:
+            if i==rowNum:
+                if osp.isfile(newFile):
+                    with open(newFile, 'a',encoding='utf-8') as new:
+                        new.write(ln)
+                        return f"Строка скопирована в существующий файл {newFile}"
+                else:
+                    with open(newFile, 'w',encoding='utf-8') as new:
+                        new.write(ln)
+                        return f"Строка скопирована в новый файл {newFile}"
+            i+=1
+    return f"Нет такой строки в файле {fileName}"
 
 
 work_with_phonebook()
